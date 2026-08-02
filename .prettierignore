@@ -4,6 +4,7 @@ out
 build
 package-lock.json
 supabase/migrations
+supabase/.temp
 *.sql
 BUILD_PLAN.md
 
