@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -105,6 +105,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      areas: {
+        Row: {
+          city: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          city?: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       clinics: {
         Row: {

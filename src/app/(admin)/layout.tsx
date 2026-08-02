@@ -1,3 +1,4 @@
+import { AdminNav } from "@/components/admin/admin-nav";
 import { AreaShell } from "@/components/layout/area-shell";
 import { requireRole } from "@/lib/auth/dal";
 
@@ -7,7 +8,8 @@ export default async function AdminLayout({
   const profile = await requireRole("admin");
   return (
     <AreaShell profile={profile} areaLabel="Admin">
-      {children}
+      <AdminNav />
+      <div className="pt-6">{children}</div>
     </AreaShell>
   );
 }
