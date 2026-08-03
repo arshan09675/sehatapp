@@ -201,12 +201,14 @@ export type Database = {
           bio: string | null
           created_at: string
           experience_years: number | null
+          full_name: string
           id: string
           is_verified: boolean
           photo_url: string | null
           pmc_number: string
           profile_id: string
           qualifications: string | null
+          search_tsv: unknown
           specialty: string
           updated_at: string
           verified_at: string | null
@@ -216,12 +218,14 @@ export type Database = {
           bio?: string | null
           created_at?: string
           experience_years?: number | null
+          full_name: string
           id?: string
           is_verified?: boolean
           photo_url?: string | null
           pmc_number: string
           profile_id: string
           qualifications?: string | null
+          search_tsv?: unknown
           specialty: string
           updated_at?: string
           verified_at?: string | null
@@ -231,12 +235,14 @@ export type Database = {
           bio?: string | null
           created_at?: string
           experience_years?: number | null
+          full_name?: string
           id?: string
           is_verified?: boolean
           photo_url?: string | null
           pmc_number?: string
           profile_id?: string
           qualifications?: string | null
+          search_tsv?: unknown
           specialty?: string
           updated_at?: string
           verified_at?: string | null
@@ -487,7 +493,32 @@ export type Database = {
       }
       current_doctor_id: { Args: never; Returns: string }
       doctor_treats_patient: { Args: { p_patient: string }; Returns: boolean }
+      doctors_search_vector: {
+        Args: {
+          p_full_name: string
+          p_qualifications: string
+          p_specialty: string
+        }
+        Returns: unknown
+      }
       is_admin: { Args: never; Returns: boolean }
+      taken_slots: {
+        Args: {
+          p_clinic_id: string
+          p_doctor_id: string
+          p_from: string
+          p_to: string
+        }
+        Returns: string[]
+      }
+      taken_slots_bulk: {
+        Args: { p_doctor_ids: string[]; p_from: string; p_to: string }
+        Returns: {
+          clinic_id: string
+          doctor_id: string
+          slot_start: string
+        }[]
+      }
     }
     Enums: {
       appointment_status:

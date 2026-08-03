@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   countSlots,
   formatTime12h,
+  generateDaySlots,
   isSlotWithinSchedule,
+  SLOT_MINUTES_OPTIONS,
   slotHint,
   TIME_OPTIONS,
   toMinutes,
@@ -105,6 +107,85 @@ describe("TIME_OPTIONS", () => {
     expect(TIME_OPTIONS[0]).toEqual({ value: "06:00", label: "6:00 AM" });
     expect(TIME_OPTIONS.at(-1)).toEqual({ value: "23:00", label: "11:00 PM" });
     expect(TIME_OPTIONS).toHaveLength(69);
+  });
+});
+
+describe("generateDaySlots", () => {
+  const RANGES: ReadonlyArray<[string, string]> = [
+    ["09:00", "13:00"],
+    ["15:00", "18:00"],
+    ["12:00", "16:30"],
+    ["09:00", "09:50"],
+    ["08:00", "20:00"],
+    ["23:00", "23:30"],
+  ];
+
+  it("starts at the start time and stops before the end time", () => {
+    const slots = generateDaySlots({
+      dayOfWeek: 1,
+      startTime: "15:00",
+      endTime: "18:00",
+      slotMinutes: 15,
+    });
+    expect(slots[0]).toBe("15:00");
+    expect(slots.at(-1)).toBe("17:45");
+    expect(slots).not.toContain("18:00");
+  });
+
+  // The two guarantees that keep the public picker, the doctor dashboard, and
+  // book_appointment from drifting apart. If someone reimplements slot
+  // generation anywhere, one of these breaks.
+  it("agrees with countSlots for every legal duration", () => {
+    for (const [startTime, endTime] of RANGES) {
+      for (const slotMinutes of SLOT_MINUTES_OPTIONS) {
+        expect(
+          generateDaySlots({ dayOfWeek: 1, startTime, endTime, slotMinutes }),
+        ).toHaveLength(countSlots(startTime, endTime, slotMinutes));
+      }
+    }
+  });
+
+  it("only ever produces times isSlotWithinSchedule accepts", () => {
+    for (const [startTime, endTime] of RANGES) {
+      for (const slotMinutes of SLOT_MINUTES_OPTIONS) {
+        const day = { dayOfWeek: 3, startTime, endTime, slotMinutes };
+        for (const slot of generateDaySlots(day)) {
+          expect(isSlotWithinSchedule([day], 3, slot)).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("never offers a slot that would overrun closing time", () => {
+    // book_appointment would accept 12:45 here — it only checks that the
+    // start is aligned and before end_time. We deliberately do not offer it.
+    const day = {
+      dayOfWeek: 1,
+      startTime: "09:00",
+      endTime: "13:00",
+      slotMinutes: 45,
+    };
+    expect(generateDaySlots(day)).toEqual([
+      "09:00",
+      "09:45",
+      "10:30",
+      "11:15",
+      "12:00",
+    ]);
+    expect(isSlotWithinSchedule([day], 1, "12:45")).toBe(true);
+  });
+
+  it("returns nothing for an unusable range", () => {
+    const base = { dayOfWeek: 1, slotMinutes: 15 };
+    expect(
+      generateDaySlots({ ...base, startTime: "18:00", endTime: "15:00" }),
+    ).toEqual([]);
+    expect(
+      generateDaySlots({ ...base, startTime: "15:00", endTime: "15:00" }),
+    ).toEqual([]);
+    expect(
+      generateDaySlots({ ...base, startTime: "oops", endTime: "15:00" }),
+    ).toEqual([]);
   });
 });
 

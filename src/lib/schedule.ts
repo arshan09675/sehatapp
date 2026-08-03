@@ -120,6 +120,55 @@ export const TIME_OPTIONS: ReadonlyArray<{ value: string; label: string }> =
   });
 
 /**
+ * The single definition of a day's slot grid: a half-open minute range walked
+ * in `slotMinutes` steps from `startTime`. Everything that generates or
+ * validates a slot goes through here, so the public picker, the doctor
+ * dashboard, and book_appointment cannot drift apart.
+ *
+ * Returns null when the row is unusable (unparseable times, non-positive
+ * duration) rather than throwing — callers treat that as "no slots".
+ */
+function slotGrid(
+  day: DaySchedule,
+): { from: number; to: number; step: number } | null {
+  const from = toMinutes(day.startTime);
+  const to = toMinutes(day.endTime);
+  if (Number.isNaN(from) || Number.isNaN(to) || day.slotMinutes <= 0) {
+    return null;
+  }
+  return { from, to, step: day.slotMinutes };
+}
+
+/**
+ * Every offerable start time for one weekday, as "HH:MM" wall-clock strings.
+ *
+ * A slot must fit *entirely* inside the window: 09:00–13:00 at 45 minutes
+ * yields five slots, not six, because a sixth at 12:45 would run to 13:30 and
+ * a doctor who says they close at one o'clock means it.
+ *
+ * This is deliberately stricter than book_appointment, which only checks that
+ * the start is grid-aligned and before end_time — so it would accept that
+ * 12:45. Being a conservative subset is the safe direction: everything we
+ * offer is bookable, and the RPC stays the authority on what is legal. It
+ * also keeps this in lockstep with countSlots(), which is what the doctor's
+ * "45-min · 5 slots" read-out shows.
+ */
+export function generateDaySlots(day: DaySchedule): string[] {
+  const grid = slotGrid(day);
+  if (!grid) return [];
+
+  const slots: string[] = [];
+  for (
+    let minutes = grid.from;
+    minutes + grid.step <= grid.to;
+    minutes += grid.step
+  ) {
+    slots.push(toTimeString(minutes));
+  }
+  return slots;
+}
+
+/**
  * Whether a wall-clock time on a weekday lands on a bookable slot. Mirrors
  * book_appointment's validation exactly — half-open range plus the modulo
  * grid check anchored at start_time — so the dashboard and the booking RPC
@@ -135,15 +184,12 @@ export function isSlotWithinSchedule(
 
   return week.some((day) => {
     if (day.dayOfWeek !== dayOfWeek) return false;
-    const from = toMinutes(day.startTime);
-    const to = toMinutes(day.endTime);
-    if (Number.isNaN(from) || Number.isNaN(to) || day.slotMinutes <= 0) {
-      return false;
-    }
+    const grid = slotGrid(day);
+    if (!grid) return false;
     return (
-      minutes >= from &&
-      minutes < to &&
-      (minutes - from) % day.slotMinutes === 0
+      minutes >= grid.from &&
+      minutes < grid.to &&
+      (minutes - grid.from) % grid.step === 0
     );
   });
 }

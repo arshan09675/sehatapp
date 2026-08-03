@@ -158,6 +158,10 @@ export async function completeProfile(
   const user = await getUser();
   if (!user) redirect("/login");
 
+  // Where the user was headed before we asked them to finish signing up —
+  // e.g. a doctor's page with a slot already picked.
+  const next = safeNextPath(formData.get("next")?.toString());
+
   const parsed = completeProfileSchema.safeParse({
     fullName: formData.get("fullName"),
     phone: formData.get("phone"),
@@ -189,7 +193,7 @@ export async function completeProfile(
     return { formError: "Could not save your profile. Please try again." };
   }
 
-  redirect(ROLE_HOME[data.role]);
+  redirect(next ?? ROLE_HOME[data.role]);
 }
 
 export async function signOut(): Promise<void> {

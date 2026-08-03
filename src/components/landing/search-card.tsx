@@ -1,21 +1,20 @@
-"use client";
-
 import { cn } from "@/lib/utils";
-import { searchSpecialties } from "./data";
+import { specialties } from "./data";
 import { SearchIcon } from "./icons";
 import { btn, btnPrimary } from "./styles";
 
-// TODO(Phase 4): make this a real search — route to /doctors with city, area,
-// and specialty filters instead of scrolling to the static card grid.
-export function SearchCard() {
+/**
+ * The landing's search entry point.
+ *
+ * A plain GET form pointed at /doctors: the browser builds the query string
+ * itself, so this needs no client JavaScript and works before hydration.
+ * The richer filtering (area, free text) lives on /doctors itself.
+ */
+export function SearchCard({ cities }: { cities: string[] }) {
   return (
     <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        document
-          .getElementById("doctors")
-          ?.scrollIntoView({ behavior: "smooth" });
-      }}
+      action="/doctors"
+      method="get"
       className="bg-surface shadow-lift relative z-[3] mx-auto -mt-[52px] grid max-w-[820px] grid-cols-[1.05fr_1.3fr_auto] gap-2.5 rounded-2xl p-3 max-[860px]:grid-cols-1"
     >
       <div className="bg-surface-dim flex flex-col gap-0.5 rounded-[11px] px-[15px] py-[9px]">
@@ -27,11 +26,17 @@ export function SearchCard() {
         </label>
         <select
           id="f-city"
-          className="text-ink cursor-pointer appearance-none border-none bg-transparent py-0.5 font-sans text-base font-medium"
+          name="city"
+          className="text-ink cursor-pointer appearance-none border-none bg-transparent py-0.5 font-sans text-base font-medium outline-none"
         >
-          <option>Lahore</option>
+          {cities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
         </select>
       </div>
+
       <div className="bg-surface-dim flex flex-col gap-0.5 rounded-[11px] px-[15px] py-[9px]">
         <label
           htmlFor="f-spec"
@@ -41,13 +46,18 @@ export function SearchCard() {
         </label>
         <select
           id="f-spec"
-          className="text-ink cursor-pointer appearance-none border-none bg-transparent py-0.5 font-sans text-base font-medium"
+          name="specialty"
+          className="text-ink cursor-pointer appearance-none border-none bg-transparent py-0.5 font-sans text-base font-medium outline-none"
         >
-          {searchSpecialties.map((s) => (
-            <option key={s}>{s}</option>
+          <option value="">Any specialty</option>
+          {specialties.map((specialty) => (
+            <option key={specialty} value={specialty}>
+              {specialty}
+            </option>
           ))}
         </select>
       </div>
+
       <button
         type="submit"
         className={cn(

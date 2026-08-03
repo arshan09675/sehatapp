@@ -11,13 +11,17 @@ import { t } from "@/lib/i18n";
 
 export function CompleteProfileForm({
   defaultFullName,
+  next,
 }: {
   defaultFullName?: string;
+  /** Where to continue afterwards — e.g. a booking that was interrupted. */
+  next?: string;
 }) {
   const [state, action, pending] = useActionState(completeProfile, undefined);
 
   return (
     <form action={action} className="grid gap-4" noValidate>
+      {next && <input type="hidden" name="next" value={next} />}
       {state?.formError && (
         <Alert variant="destructive">
           <AlertDescription>{state.formError}</AlertDescription>

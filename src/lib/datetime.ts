@@ -68,16 +68,35 @@ export function formatSlotTime(value: string | Date): string {
   return clockFmt.format(typeof value === "string" ? new Date(value) : value);
 }
 
+/**
+ * An appointment in words: "Tuesday, 12 Aug — 3:30 PM".
+ * DESIGN.md:123-126 asks for the date spelled out on confirmation surfaces —
+ * a patient reading "12/8" cannot tell it from "8/12".
+ */
+export function formatAppointmentWhen(value: string | Date): string {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return `${weekdayLongFmt.format(date)}, ${dayMonthFmt.format(date)} — ${clockFmt.format(date)}`;
+}
+
 /** A date-only key ("2026-08-14") as a Date at Karachi midday — safely inside
  *  the day whichever way it is later formatted. */
 function fromDateKey(dateKey: string): Date {
   return new Date(`${dateKey}T12:00:00${KARACHI_UTC_OFFSET}`);
 }
 
+/** "2026-08-14" → "Thu". */
+export function formatWeekdayShort(dateKey: string): string {
+  return weekdayShortFmt.format(fromDateKey(dateKey));
+}
+
+/** "2026-08-14" → "14 Aug". */
+export function formatDayMonth(dateKey: string): string {
+  return dayMonthFmt.format(fromDateKey(dateKey));
+}
+
 /** "2026-08-14" → "Thu, 14 Aug", the leave-panel format. */
 export function formatLeaveDate(dateKey: string): string {
-  const date = fromDateKey(dateKey);
-  return `${weekdayShortFmt.format(date)}, ${dayMonthFmt.format(date)}`;
+  return `${formatWeekdayShort(dateKey)}, ${formatDayMonth(dateKey)}`;
 }
 
 /** "Monday, 3 August 2026", the dashboard greeting sub-line. */

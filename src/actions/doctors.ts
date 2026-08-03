@@ -180,6 +180,10 @@ export async function createDoctor(
     .from("doctors")
     .insert({
       profile_id: userId,
+      // Denormalised so public pages never have to read profiles, which RLS
+      // keeps private. doctors_search_sync re-derives it from profiles on
+      // write, so this value only has to be right, not authoritative.
+      full_name: input.fullName,
       pmc_number: input.pmcNumber,
       specialty: input.specialty,
       qualifications: input.qualifications,

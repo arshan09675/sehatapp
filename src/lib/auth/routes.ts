@@ -53,11 +53,20 @@ export function safeNextPath(next: string | null | undefined): string | null {
  * Where to send a user right after authentication.
  * Profile incomplete (no phone yet) → finish it first; phone is required
  * for SMS notifications (Phase 5).
+ *
+ * The pending destination rides along through /complete-profile rather than
+ * being dropped: a patient who picked a slot, was sent to log in, and turns
+ * out to have no phone on file must still land back on that slot afterwards.
  */
 export function postAuthPath(
   profile: { role: UserRole; phone: string | null } | null,
   next?: string | null,
 ): string {
-  if (!profile || !profile.phone) return "/complete-profile";
-  return safeNextPath(next) ?? ROLE_HOME[profile.role];
+  const resume = safeNextPath(next);
+  if (!profile || !profile.phone) {
+    return resume
+      ? `/complete-profile?next=${encodeURIComponent(resume)}`
+      : "/complete-profile";
+  }
+  return resume ?? ROLE_HOME[profile.role];
 }

@@ -14,13 +14,15 @@ export function Topbar() {
         )}
       >
         <Logo />
+        {/* Absolute paths so the bar works on /doctors too, not just the
+            landing where the anchors live. */}
         <nav className="flex gap-[26px] text-[15px] font-medium max-[860px]:hidden">
-          <a href="#doctors" className="text-muted-dark hover:text-white">
+          <Link href="/doctors" className="text-muted-dark hover:text-white">
             Find a Doctor
-          </a>
-          <a href="#how" className="text-muted-dark hover:text-white">
+          </Link>
+          <Link href="/#how" className="text-muted-dark hover:text-white">
             How it works
-          </a>
+          </Link>
           <Link href="/login" className="text-muted-dark hover:text-white">
             For Doctors
           </Link>

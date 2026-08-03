@@ -77,19 +77,30 @@ export async function proxy(request: NextRequest) {
 
     const incomplete = !profile?.phone;
 
+    const nextParam = safeNextPath(request.nextUrl.searchParams.get("next"));
+
     if (pathname === "/complete-profile") {
       // Render when the profile still needs completing (or is missing —
-      // the page surfaces that error); bounce completed users home.
-      return incomplete ? response : redirectTo(ROLE_HOME[profile!.role]);
+      // the page surfaces that error); bounce completed users onward,
+      // honouring any destination they were originally headed for.
+      return incomplete
+        ? response
+        : redirectTo(postAuthPath(profile, nextParam));
     }
 
     if (incomplete) {
-      return redirectTo("/complete-profile");
+      // Carry the intended destination across so a half-finished profile
+      // does not strand an in-progress booking.
+      const resume = isAuthPage(pathname) ? nextParam : pathname + search;
+      return redirectTo(
+        resume
+          ? `/complete-profile?next=${encodeURIComponent(resume)}`
+          : "/complete-profile",
+      );
     }
 
     if (isAuthPage(pathname)) {
-      const next = safeNextPath(request.nextUrl.searchParams.get("next"));
-      return redirectTo(postAuthPath(profile, next));
+      return redirectTo(postAuthPath(profile, nextParam));
     }
 
     const requiredRole = requiredRoleForPath(pathname);
