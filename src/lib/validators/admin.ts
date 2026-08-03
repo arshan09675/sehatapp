@@ -37,6 +37,38 @@ export const doctorClinicSchema = z.object({
     .max(1_000_000, { error: "Fee looks too large." }),
 });
 
+/**
+ * Doctor profile fields, shared by admin onboarding and the doctor's own
+ * profile editor (src/lib/validators/doctor.ts) so both enforce the same
+ * limits and speak with the same voice.
+ */
+export const specialtySchema = z
+  .string({ error: "Specialty is required." })
+  .trim()
+  .min(2, { error: "Specialty must be at least 2 characters." })
+  .max(80, { error: "Specialty must be at most 80 characters." });
+
+export const qualificationsSchema = z
+  .string()
+  .trim()
+  .max(300, { error: "Qualifications must be at most 300 characters." })
+  .optional()
+  .transform((v) => (v ? v : null));
+
+export const bioSchema = z
+  .string()
+  .trim()
+  .max(2000, { error: "Bio must be at most 2000 characters." })
+  .optional()
+  .transform((v) => (v ? v : null));
+
+export const experienceYearsSchema = z
+  .union([z.literal(""), z.coerce.number().int().min(0).max(70)], {
+    error: "Experience must be a number of years between 0 and 70.",
+  })
+  .optional()
+  .transform((v) => (v === "" || v === undefined ? null : v));
+
 export const createDoctorSchema = z.object({
   email: emailSchema,
   fullName: z
@@ -52,29 +84,10 @@ export const createDoctorSchema = z.object({
     .regex(/^[A-Z0-9/-]{3,30}$/, {
       error: "PMC number may only contain letters, digits, / and -.",
     }),
-  specialty: z
-    .string({ error: "Specialty is required." })
-    .trim()
-    .min(2, { error: "Specialty must be at least 2 characters." })
-    .max(80, { error: "Specialty must be at most 80 characters." }),
-  qualifications: z
-    .string()
-    .trim()
-    .max(300, { error: "Qualifications must be at most 300 characters." })
-    .optional()
-    .transform((v) => (v ? v : null)),
-  bio: z
-    .string()
-    .trim()
-    .max(2000, { error: "Bio must be at most 2000 characters." })
-    .optional()
-    .transform((v) => (v ? v : null)),
-  experienceYears: z
-    .union([z.literal(""), z.coerce.number().int().min(0).max(70)], {
-      error: "Experience must be a number of years between 0 and 70.",
-    })
-    .optional()
-    .transform((v) => (v === "" || v === undefined ? null : v)),
+  specialty: specialtySchema,
+  qualifications: qualificationsSchema,
+  bio: bioSchema,
+  experienceYears: experienceYearsSchema,
   clinics: z
     .array(doctorClinicSchema)
     .min(1, { error: "Assign the doctor to at least one clinic." }),

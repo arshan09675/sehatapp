@@ -42,6 +42,19 @@
   --animate-pulse-dot: pulse-dot 2.2s infinite;
   --animate-scroll-cue: scroll-cue 1.6s infinite;
 
+  /* Transient "✓ Saved" confirmation on the doctor's schedule form: holds for
+     2s, then fades. Driven by remounting the element, so no timer state. */
+  --animate-save-flash: save-flash 2.2s ease-out forwards;
+
+  @keyframes save-flash {
+    0%,
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
   @keyframes rise {
     from {
       opacity: 0;

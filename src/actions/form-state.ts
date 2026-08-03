@@ -27,3 +27,14 @@ export type CreateDoctorState =
 
 export type ResetPasswordState =
   (AdminActionResult & { credentials?: DoctorCredentials }) | undefined;
+
+/**
+ * Weekly timings and leave days.
+ *
+ * `savedAt` is an epoch timestamp rather than a boolean so consecutive saves
+ * are distinguishable: it keys the "✓ Saved" flash's remount and tells the
+ * leave form whether a save happened after it was opened. `notice` carries a
+ * non-blocking warning (e.g. booked visits now outside the hours).
+ */
+export type ScheduleState =
+  (AdminActionResult & { savedAt?: number; notice?: string }) | undefined;

@@ -386,6 +386,7 @@ export type Database = {
           id: string
           is_closed: boolean
           on_date: string
+          reason: string | null
           start_time: string | null
         }
         Insert: {
@@ -394,6 +395,7 @@ export type Database = {
           id?: string
           is_closed?: boolean
           on_date: string
+          reason?: string | null
           start_time?: string | null
         }
         Update: {
@@ -402,6 +404,7 @@ export type Database = {
           id?: string
           is_closed?: boolean
           on_date?: string
+          reason?: string | null
           start_time?: string | null
         }
         Relationships: [
@@ -483,6 +486,7 @@ export type Database = {
         }
       }
       current_doctor_id: { Args: never; Returns: string }
+      doctor_treats_patient: { Args: { p_patient: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
