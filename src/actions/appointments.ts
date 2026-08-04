@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import * as z from "zod";
 
 import {
@@ -11,6 +12,7 @@ import {
   type AppointmentStatus,
 } from "@/lib/appointments";
 import { requireDoctor } from "@/lib/auth/dal";
+import { notifyDoctorStatusChange } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
 import { cancelReasonSchema } from "@/lib/validators/doctor";
 import type { AdminFormState } from "@/actions/form-state";
@@ -129,6 +131,12 @@ export async function updateAppointmentStatus(
       ),
     };
   }
+
+  // Past the guards, so the write definitely landed. notifyDoctorStatusChange
+  // decides which transitions are worth a message (confirmed and cancelled;
+  // completed and no_show are recorded after the fact), keeping the branching
+  // out of this action.
+  after(() => notifyDoctorStatusChange(appointmentId, next));
 
   revalidatePath("/doctor");
   return {};

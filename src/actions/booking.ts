@@ -2,9 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import * as z from "zod";
 
 import { getUser } from "@/lib/auth/dal";
+import { notifyBookingRequested, notifyPatientCancelled } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
 import { patientNoteSchema, slotStartSchema } from "@/lib/validators/booking";
 import { cancelReasonSchema } from "@/lib/validators/doctor";
@@ -112,6 +114,12 @@ export async function bookAppointment(
     return { formError: "Could not book that appointment. Please try again." };
   }
 
+  // after() rather than an await: the patient should not wait on an SMS
+  // round-trip, and Next dispatches server actions one at a time per client so
+  // a slow send would also stall their next action. It still runs despite the
+  // redirect() below — next/server's `after` fires even when redirect() throws.
+  after(() => notifyBookingRequested(appointment.id));
+
   revalidatePath("/dashboard");
   revalidatePath(`/doctors/${doctorId}`);
   redirect(`/dashboard?booked=${appointment.id}`);
@@ -163,6 +171,10 @@ export async function cancelAppointment(
         "This appointment can no longer be cancelled — it may already be completed or cancelled. Refresh to see the latest.",
     };
   }
+
+  // Only after the UPDATE matched: the doctor is told their slot reopened, and
+  // nothing is sent for a cancellation that did not happen.
+  after(() => notifyPatientCancelled(appointmentId));
 
   revalidatePath("/dashboard");
   return {};

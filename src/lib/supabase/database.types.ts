@@ -267,33 +267,55 @@ export type Database = {
       }
       notifications: {
         Row: {
+          appointment_id: string | null
           channel: string
           created_at: string
+          error: string | null
           id: string
           payload: Json
           profile_id: string
+          provider_id: string | null
+          sent_at: string | null
           status: string
           template: string
+          to_addr: string | null
         }
         Insert: {
+          appointment_id?: string | null
           channel: string
           created_at?: string
+          error?: string | null
           id?: string
           payload?: Json
           profile_id: string
+          provider_id?: string | null
+          sent_at?: string | null
           status?: string
           template: string
+          to_addr?: string | null
         }
         Update: {
+          appointment_id?: string | null
           channel?: string
           created_at?: string
+          error?: string | null
           id?: string
           payload?: Json
           profile_id?: string
+          provider_id?: string | null
+          sent_at?: string | null
           status?: string
           template?: string
+          to_addr?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "notifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notifications_profile_id_fkey"
             columns: ["profile_id"]
