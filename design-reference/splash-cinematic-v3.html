@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SehatBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,600;9..144,0,700;9..144,1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{--brand:#2B59E0;--brand-light:#6EA8FE;--violet:#8B5CF6;--ink-light:#EAF0FF;--muted:#93A0BD}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{background:#03060D;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  #shake{position:fixed;inset:0;will-change:transform}
+  canvas{position:absolute;inset:0;display:block}
+
+  .bg{position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      radial-gradient(1400px 900px at 50% 46%, rgba(43,89,224,.14), transparent 60%),
+      radial-gradient(820px 580px at 50% 46%, rgba(139,92,246,.10), transparent 60%);
+    opacity:0;transition:opacity .6s ease}
+  .bg.on{opacity:1}
+  .bg.charge{animation:charge 1.05s ease-in forwards}
+  @keyframes charge{0%{filter:brightness(1)}100%{filter:brightness(1.5)}}
+
+  /* vignette that tightens during charge for drama */
+  .vig{position:absolute;inset:0;z-index:2;pointer-events:none;
+    box-shadow:inset 0 0 300px 80px rgba(0,0,0,.9);opacity:.6;transition:opacity .6s ease}
+
+  .flash{position:absolute;inset:0;z-index:6;pointer-events:none;background:#F2F6FF;opacity:0}
+  .flash.fire{animation:flash 640ms cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes flash{0%{opacity:0}4%{opacity:1}12%{opacity:.7}100%{opacity:0}}
+
+  .lockup{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;pointer-events:none;gap:16px}
+  .markwrap{position:relative}
+  .mark{font-family:'Fraunces',serif;font-weight:700;letter-spacing:-.02em;
+    font-size:clamp(50px,10vw,120px);line-height:1;color:#fff;
+    opacity:0;transform:scale(.82);filter:blur(12px);text-shadow:0 0 54px rgba(43,89,224,.6)}
+  .mark span{background:linear-gradient(120deg,#8FC0FF,#6E8CFF 50%,#A78BFA);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .mark.reveal{animation:markIn 1.7s cubic-bezier(.16,1,.3,1) forwards}
+  @keyframes markIn{
+    0%{opacity:0;transform:scale(.82);filter:blur(12px)}
+    28%{opacity:1;transform:scale(1.04);filter:blur(4px)}
+    45%{opacity:1;transform:scale(1);filter:blur(0)}
+    100%{opacity:1;transform:scale(1);filter:blur(0)}
+  }
+  /* light sweep that glides across the wordmark after reveal */
+  .sweep{position:absolute;inset:0;overflow:hidden;opacity:0;mix-blend-mode:screen}
+  .sweep.go{opacity:1}
+  .sweep::after{content:"";position:absolute;top:-20%;left:-60%;width:40%;height:140%;
+    transform:skewX(-18deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)}
+  .sweep.go::after{animation:sweep 1.1s ease .2s forwards}
+  @keyframes sweep{to{left:120%}}
+
+  .tagline{font-size:clamp(14px,2.2vw,19px);color:var(--muted);letter-spacing:.03em;
+    opacity:0;transform:translateY(14px)}
+  .tagline.reveal{animation:tagIn .7s ease forwards .28s}
+  @keyframes tagIn{to{opacity:1;transform:none}}
+
+  /* three stacked shock rings */
+  .ring{position:absolute;top:46%;left:50%;z-index:5;border-radius:50%;
+    transform:translate(-50%,-50%) scale(0);opacity:0;pointer-events:none}
+  .r1{width:12px;height:12px;border:4px solid rgba(170,205,255,.98)}
+  .r2{width:12px;height:12px;border:2px solid rgba(139,92,246,.85)}
+  .r3{width:12px;height:12px;border:2px solid rgba(110,168,254,.7)}
+  .ring.fire{animation:ring 1s cubic-bezier(.12,.75,.2,1) forwards}
+  .r2.fire{animation-delay:.05s;animation-duration:1.1s}
+  .r3.fire{animation-delay:.11s;animation-duration:1.25s}
+  @keyframes ring{0%{transform:translate(-50%,-50%) scale(0);opacity:1}
+    100%{transform:translate(-50%,-50%) scale(80);opacity:0}}
+
+  .enter{position:absolute;left:50%;bottom:12%;transform:translateX(-50%) translateY(14px);z-index:8;
+    display:inline-flex;align-items:center;gap:10px;opacity:0;padding:0 26px;min-height:50px;
+    border-radius:14px;cursor:pointer;font-family:'Inter';font-weight:600;font-size:15px;color:#fff;
+    border:none;background:linear-gradient(180deg,#3B6BF0,#2B59E0);box-shadow:0 12px 34px rgba(43,89,224,.45);
+    transition:transform .18s ease,box-shadow .18s ease}
+  .enter:hover{transform:translateX(-50%) translateY(-2px);box-shadow:0 18px 44px rgba(43,89,224,.55)}
+  .enter.reveal{animation:enterIn .7s ease forwards .6s}
+  @keyframes enterIn{to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+  .skip{position:absolute;top:22px;right:24px;z-index:9;font-size:12.5px;letter-spacing:.08em;
+    color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;padding:7px 15px;cursor:pointer;backdrop-filter:blur(8px)}
+  .skip:hover{color:#fff;background:rgba(255,255,255,.1)}
+  .replay{position:absolute;bottom:22px;right:24px;z-index:9;font-size:12.5px;color:var(--muted);
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:999px;
+    padding:7px 15px;cursor:pointer;opacity:0;transition:opacity .4s,color .15s}
+  .replay.show{opacity:1}.replay:hover{color:#fff}
+</style>
+</head>
+<body>
+<div id="shake">
+  <canvas id="c"></canvas>
+  <div class="bg" id="bg"></div>
+  <div class="vig" id="vig"></div>
+  <div class="ring r1" id="r1"></div>
+  <div class="ring r2" id="r2"></div>
+  <div class="ring r3" id="r3"></div>
+  <div class="flash" id="flash"></div>
+  <div class="lockup">
+    <div class="markwrap">
+      <div class="mark" id="mark">Sehat<span>Book</span></div>
+      <div class="sweep" id="sweep"></div>
+    </div>
+    <div class="tagline" id="tagline">Healthcare, one click away.</div>
+  </div>
+  <button class="enter" id="enter">Enter
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+  <button class="skip" id="skip">SKIP</button>
+  <button class="replay" id="replay">↻ Replay</button>
+</div>
+
+<script>
+const canvas=document.getElementById('c'), ctx=canvas.getContext('2d');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const shakeEl=document.getElementById('shake');
+
+let W,H,DPR,cx,cy;
+function resize(){
+  DPR=Math.min(devicePixelRatio||1,2);
+  W=innerWidth;H=innerHeight;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  cx=W/2;cy=H*0.46;
+}
+resize();addEventListener('resize',resize);
+
+// ---------- ECG / heartbeat waveform target ----------
+function pulseTargets(){
+  const pts=[];
+  const span=Math.min(W*0.74,860), x0=cx-span/2, x1=cx+span/2;
+  const baseY=cy, amp=Math.min(H,W)*0.17, step=3.4;   // denser
+  function wave(u){
+    let y=0;
+    y+=Math.exp(-Math.pow((u-0.40)/0.020,2))*0.18;   // P
+    y-=Math.exp(-Math.pow((u-0.475)/0.010,2))*0.38;  // Q
+    y+=Math.exp(-Math.pow((u-0.50)/0.008,2))*1.05;   // R (big spike)
+    y-=Math.exp(-Math.pow((u-0.525)/0.010,2))*0.48;  // S
+    y+=Math.exp(-Math.pow((u-0.62)/0.028,2))*0.32;   // T
+    return y;
+  }
+  for(let x=x0;x<=x1;x+=step){
+    const u=(x-x0)/span, y=baseY-wave(u)*amp;
+    pts.push({x,y});
+    if(Math.abs(u-0.5)<0.14){pts.push({x,y:y-3.4});pts.push({x,y:y+3.4});}
+  }
+  return pts;
+}
+
+let particles=[];
+// Brand blue stays the core during buildup; the blast throws in electric cyan,
+// magenta, gold and violet for a wilder, more spectacular burst.
+const COLORS=['#6EA8FE','#3B82F6','#8FB6FF','#A78BFA','#2B59E0','#EAF2FF','#C9DBFF'];
+const BOOM_COLORS=['#22D3EE','#38BDF8','#818CF8','#A78BFA','#E879F9','#F0ABFC','#FBBF24','#FDE68A','#EAF2FF','#6EA8FE'];
+
+function makeParticles(){
+  const targets=pulseTargets();
+  particles=targets.map(t=>{
+    const ang=Math.random()*Math.PI*2;
+    const dist=Math.max(W,H)*(0.65+Math.random()*0.85);
+    return {
+      x:cx+Math.cos(ang)*dist, y:cy+Math.sin(ang)*dist,
+      tx:t.x, ty:t.y, vx:0, vy:0,
+      ex:Math.cos(ang), ey:Math.sin(ang),
+      r:1.0+Math.random()*2.2, c:COLORS[(Math.random()*COLORS.length)|0],
+      seed:Math.random()*Math.PI*2, life:1,
+      // charge streak flag: a subset leave energy trails while converging
+      streak:Math.random()<0.22
+    };
+  });
+}
+
+// embers: extra sparks spawned at the boom that drift and twinkle
+let embers=[];
+function spawnEmbers(){
+  embers=[];
+  const n=90;
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2, spd=4+Math.random()*18;
+    embers.push({x:cx,y:cy,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,
+      r:0.8+Math.random()*1.8,c:BOOM_COLORS[(Math.random()*BOOM_COLORS.length)|0],
+      life:1,seed:Math.random()*6});
+  }
+}
+
+let phase,t0,scanX;
+const bgEl=document.getElementById('bg'),vigEl=document.getElementById('vig'),
+      flashEl=document.getElementById('flash'),
+      r1=document.getElementById('r1'),r2=document.getElementById('r2'),r3=document.getElementById('r3'),
+      markEl=document.getElementById('mark'),sweepEl=document.getElementById('sweep'),
+      tagEl=document.getElementById('tagline'),enterEl=document.getElementById('enter'),
+      replayEl=document.getElementById('replay');
+
+function resetVisuals(){
+  [flashEl,r1,r2,r3].forEach(e=>e.classList.remove('fire'));
+  [markEl,tagEl,enterEl].forEach(e=>e.classList.remove('reveal'));
+  sweepEl.classList.remove('go');replayEl.classList.remove('show');
+  bgEl.classList.remove('on','charge');vigEl.style.opacity='.6';
+  shakeEl.style.transform='none';void flashEl.offsetWidth;
+}
+function start(){
+  resetVisuals();makeParticles();embers=[];
+  phase='converge';t0=performance.now();scanX=cx-Math.min(W*0.74,860)/2;
+  bgEl.classList.add('on');
+  if(reduce){finishInstant();return;}
+  requestAnimationFrame(loop);
+}
+function finishInstant(){
+  particles=[];embers=[];ctx.clearRect(0,0,W,H);
+  markEl.classList.add('reveal');tagEl.classList.add('reveal');
+  enterEl.classList.add('reveal');replayEl.classList.add('show');phase='done';
+}
+
+let shakeAmp=0;
+function kickShake(a){shakeAmp=Math.max(shakeAmp,a);}
+function applyShake(){
+  if(shakeAmp>0.2){
+    const dx=(Math.random()-0.5)*shakeAmp, dy=(Math.random()-0.5)*shakeAmp;
+    const rot=(Math.random()-0.5)*shakeAmp*0.06;
+    shakeEl.style.transform=`translate(${dx}px,${dy}px) rotate(${rot}deg)`;
+    shakeAmp*=0.87;
+  }else{shakeEl.style.transform='none';shakeAmp=0;}
+}
+
+function fireBoom(){
+  flashEl.classList.add('fire');
+  r1.classList.add('fire');r2.classList.add('fire');r3.classList.add('fire');
+  vigEl.style.opacity='.2';
+  kickShake(48);                 // heavy jolt
+  spawnEmbers();
+  particles.forEach(p=>{
+    // recolor to a wild hue only now — the heartbeat was brand blue, the blast is a rainbow
+    p.c=BOOM_COLORS[(Math.random()*BOOM_COLORS.length)|0];
+    const spd=10+Math.random()*20;
+    p.vx=p.ex*spd+(Math.random()-0.5)*5;
+    p.vy=p.ey*spd+(Math.random()-0.5)*5;
+    p.life=1;
+  });
+  setTimeout(()=>{markEl.classList.add('reveal');tagEl.classList.add('reveal');},90);
+  setTimeout(()=>{sweepEl.classList.add('go');},1100);
+  setTimeout(()=>{enterEl.classList.add('reveal');replayEl.classList.add('show');},1300);
+}
+
+function loop(now){
+  const t=now-t0;
+  ctx.clearRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+  applyShake();
+
+  if(phase==='converge'){
+    let settled=0;
+    particles.forEach(p=>{
+      const px=p.x, py=p.y;
+      p.x+=(p.tx-p.x)*0.09;
+      p.y+=(p.ty-p.y)*0.09;
+      const dx=p.tx-p.x,dy=p.ty-p.y;
+      if(dx*dx+dy*dy<4) settled++;
+      // energy streak: draw a short trail behind fast movers
+      if(p.streak){
+        ctx.strokeStyle=p.c;ctx.globalAlpha=0.35;ctx.lineWidth=1.1;
+        ctx.shadowBlur=8;ctx.shadowColor=p.c;
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(p.x,p.y);ctx.stroke();
+        ctx.globalAlpha=1;ctx.shadowBlur=0;
+      }
+      const s=0.6+Math.sin(now*0.007+p.seed)*0.4;
+      drawDot(p,s);
+    });
+    drawScan(now);
+    // ramp brightness + tighten vignette as energy gathers
+    if(t>500){bgEl.classList.add('charge');vigEl.style.opacity='.75';}
+    if(t>900 && settled>particles.length*0.9){phase='hold';t0=now;}
+  }
+  else if(phase==='hold'){
+    particles.forEach(p=>{
+      p.x+=(p.tx-p.x)*0.25+(Math.random()-0.5)*0.5;
+      p.y+=(p.ty-p.y)*0.25+(Math.random()-0.5)*0.5;
+      const s=1.0+Math.sin(now*0.05+p.seed)*0.7;
+      drawDot(p,s);
+    });
+    kickShake(Math.min(9,(t/380)*9));     // rising anticipation rumble
+    if(t>380){phase='boom';t0=now;fireBoom();}
+  }
+  else if(phase==='boom'||phase==='settle'){
+    particles.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.vx*=0.93;p.vy*=0.93;p.vy+=0.06;
+      p.life*=0.965;drawDot(p,p.life*1.6);
+    });
+    embers.forEach(e=>{
+      e.x+=e.vx;e.y+=e.vy;e.vx*=0.95;e.vy*=0.95;e.vy+=0.04;
+      e.life*=0.972;
+      const tw=0.5+Math.sin(now*0.02+e.seed)*0.5;
+      ctx.beginPath();ctx.fillStyle=e.c;ctx.globalAlpha=e.life*tw;
+      ctx.shadowBlur=10;ctx.shadowColor=e.c;
+      ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=1;ctx.shadowBlur=0;
+    });
+    if(t>160) phase='settle';
+    if(phase==='settle'&&t>2600) phase='done';
+  }
+
+  if(phase!=='done') requestAnimationFrame(loop);
+  else{ctx.clearRect(0,0,W,H);shakeEl.style.transform='none';}
+}
+
+function drawScan(now){
+  const span=Math.min(W*0.74,860), x0=cx-span/2, x1=cx+span/2;
+  scanX+=(x1-x0)/55;
+  if(scanX>x1) scanX=x0;
+  ctx.save();
+  ctx.globalAlpha=0.95;ctx.fillStyle='#F2F6FF';
+  ctx.shadowBlur=28;ctx.shadowColor='#6EA8FE';
+  ctx.beginPath();ctx.arc(scanX,cy,3.8,0,Math.PI*2);ctx.fill();
+  // faint vertical scan line
+  ctx.globalAlpha=0.10;ctx.strokeStyle='#6EA8FE';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(scanX,cy-H*0.22);ctx.lineTo(scanX,cy+H*0.22);ctx.stroke();
+  ctx.restore();
+}
+
+function drawDot(p,glow){
+  const a=Math.max(0,Math.min(1,p.life!=null?p.life:1));
+  ctx.beginPath();ctx.fillStyle=p.c;ctx.globalAlpha=a;
+  ctx.shadowBlur=14*glow;ctx.shadowColor=p.c;
+  ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+  ctx.globalAlpha=1;ctx.shadowBlur=0;
+}
+
+document.getElementById('skip').addEventListener('click',finishInstant);
+document.getElementById('replay').addEventListener('click',start);
+enterEl.addEventListener('click',()=>{enterEl.textContent='Loading…';});
+
+start();
+</script>
+</body>
+</html>

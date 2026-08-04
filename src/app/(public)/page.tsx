@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { DocTop, DoctorCard } from "@/components/landing/doctor-card";
+import { Faq } from "@/components/landing/faq";
 import { Footer } from "@/components/landing/footer";
 import { Hero } from "@/components/landing/hero";
 import HeroSceneLoader from "@/components/landing/hero-scene-loader";
@@ -202,6 +203,9 @@ export default async function LandingPage() {
             </Reveal>
           </div>
         </section>
+
+        {/* faq — last thing on the light sheet, directly above the footer */}
+        <Faq />
       </div>
 
       <Footer />
