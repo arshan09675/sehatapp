@@ -6,10 +6,10 @@ import { btn, btnPrimary } from "@/components/landing/styles";
 import { cn } from "@/lib/utils";
 
 export default function PublicError({
-  reset,
+  unstable_retry,
 }: {
   error: Error;
-  reset: () => void;
+  unstable_retry: () => void;
 }) {
   return (
     <div className="bg-surface-dim flex flex-1 items-center justify-center px-4 py-24">
@@ -24,7 +24,7 @@ export default function PublicError({
         <div className="mt-2 flex flex-wrap justify-center gap-2">
           <button
             type="button"
-            onClick={reset}
+            onClick={() => unstable_retry()}
             className={cn(btn, btnPrimary, "min-h-11")}
           >
             Try again
