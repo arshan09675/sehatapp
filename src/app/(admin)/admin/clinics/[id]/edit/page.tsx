@@ -6,7 +6,7 @@ import { DeleteClinicButton } from "@/components/admin/delete-clinic-button";
 import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Edit clinic — Admin — SehatBook" };
+export const metadata: Metadata = { title: "Edit clinic — Admin" };
 
 export default async function EditClinicPage({
   params,

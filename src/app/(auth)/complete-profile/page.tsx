@@ -14,7 +14,7 @@ import { ROLE_HOME, safeNextPath } from "@/lib/auth/routes";
 import { t } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Complete your profile — SehatBook",
+  title: "Complete your profile",
 };
 
 export default async function CompleteProfilePage({

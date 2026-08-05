@@ -26,10 +26,10 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const doctor = await getPublicDoctor(id);
-  if (!doctor) return { title: "Doctor not found — SehatBook" };
+  if (!doctor) return { title: "Doctor not found" };
 
   return {
-    title: `${doctor.fullName} — ${doctor.specialty} — SehatBook`,
+    title: `${doctor.fullName} — ${doctor.specialty}`,
     description:
       doctor.bio ??
       `Book an appointment with ${doctor.fullName}, PMC-verified ${doctor.specialty}.`,

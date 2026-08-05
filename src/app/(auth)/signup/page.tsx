@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { t } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "Sign up — SehatBook" };
+export const metadata: Metadata = { title: "Sign up" };
 
 export default function SignupPage() {
   return (

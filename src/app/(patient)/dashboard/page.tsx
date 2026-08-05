@@ -16,7 +16,7 @@ import type { AppointmentStatus } from "@/lib/appointments";
 import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Your appointments — SehatBook" };
+export const metadata: Metadata = { title: "Your appointments" };
 
 const APPOINTMENT_SELECT =
   "id, slot_start, status, fee_pkr, patient_note, cancel_reason, " +

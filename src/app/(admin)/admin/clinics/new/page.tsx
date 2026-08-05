@@ -4,7 +4,7 @@ import { ClinicForm } from "@/components/admin/clinic-form";
 import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Add clinic — Admin — SehatBook" };
+export const metadata: Metadata = { title: "Add clinic — Admin" };
 
 export default async function NewClinicPage() {
   await requireRole("admin");

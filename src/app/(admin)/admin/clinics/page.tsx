@@ -13,7 +13,7 @@ import {
 import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Clinics — Admin — SehatBook" };
+export const metadata: Metadata = { title: "Clinics — Admin" };
 
 export default async function ClinicsPage() {
   await requireRole("admin");

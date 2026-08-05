@@ -16,7 +16,7 @@ import { PMC_REGISTER_URL } from "@/lib/pmc";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Verification queue — Admin — SehatBook",
+  title: "Verification queue — Admin",
 };
 
 const dateFmt = new Intl.DateTimeFormat("en-PK", {

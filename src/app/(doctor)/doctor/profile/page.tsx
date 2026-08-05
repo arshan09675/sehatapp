@@ -16,7 +16,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Profile — Doctor — SehatBook",
+  title: "Profile — Doctor",
 };
 
 type ClinicRow = { name: string; area: string; city: string; address: string };

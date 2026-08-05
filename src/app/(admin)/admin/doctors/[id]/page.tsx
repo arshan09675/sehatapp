@@ -26,7 +26,7 @@ import { requireRole } from "@/lib/auth/dal";
 import { PMC_REGISTER_URL } from "@/lib/pmc";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Doctor — Admin — SehatBook" };
+export const metadata: Metadata = { title: "Doctor — Admin" };
 
 const dateFmt = new Intl.DateTimeFormat("en-PK", {
   dateStyle: "medium",

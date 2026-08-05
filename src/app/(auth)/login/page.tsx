@@ -11,7 +11,7 @@ import {
 import { safeNextPath } from "@/lib/auth/routes";
 import { t } from "@/lib/i18n";
 
-export const metadata: Metadata = { title: "Log in — SehatBook" };
+export const metadata: Metadata = { title: "Log in" };
 
 const ERROR_MESSAGES: Record<string, string> = {
   confirm:

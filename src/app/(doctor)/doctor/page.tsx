@@ -18,7 +18,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Appointments — Doctor — SehatBook",
+  title: "Appointments — Doctor",
 };
 
 const TAB_KEYS = ["today", "upcoming", "past"] as const;

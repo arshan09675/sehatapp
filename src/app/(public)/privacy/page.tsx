@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LegalPage, LegalSection } from "@/components/public/legal-page";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — SehatBook",
+  title: "Privacy Policy",
   description:
     "What SehatBook collects when you book a doctor, why we collect it, and how to have it removed.",
 };

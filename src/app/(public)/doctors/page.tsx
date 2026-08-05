@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { doctorSearchParamsSchema } from "@/lib/validators/booking";
 
 export const metadata: Metadata = {
-  title: "Find a doctor — SehatBook",
+  title: "Find a doctor",
   description:
     "Book PMC-verified doctors in Lahore. Real availability, fees shown upfront, no booking fee.",
 };

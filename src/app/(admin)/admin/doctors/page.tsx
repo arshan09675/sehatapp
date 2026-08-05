@@ -16,7 +16,7 @@ import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Doctors — Admin — SehatBook" };
+export const metadata: Metadata = { title: "Doctors — Admin" };
 
 const FILTERS = [
   { key: "all", label: "All" },

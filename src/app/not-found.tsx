@@ -6,7 +6,7 @@ import { PublicShell } from "@/components/public/public-shell";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Page not found — SehatBook",
+  title: "Page not found",
 };
 
 /**

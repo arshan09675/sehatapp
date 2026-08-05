@@ -8,7 +8,7 @@ import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Onboard doctor — Admin — SehatBook",
+  title: "Onboard doctor — Admin",
 };
 
 export default async function NewDoctorPage() {

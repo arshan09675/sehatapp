@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LegalPage, LegalSection } from "@/components/public/legal-page";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — SehatBook",
+  title: "Terms of Service",
   description:
     "The terms you agree to when booking a doctor through SehatBook: what we do, what we verify, and where our responsibility ends.",
 };
