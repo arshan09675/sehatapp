@@ -161,6 +161,28 @@ let particles=[];
 const COLORS=['#6EA8FE','#3B82F6','#8FB6FF','#A78BFA','#2B59E0','#EAF2FF','#C9DBFF'];
 const BOOM_COLORS=['#22D3EE','#38BDF8','#818CF8','#A78BFA','#E879F9','#F0ABFC','#FBBF24','#FDE68A','#EAF2FF','#6EA8FE'];
 
+// ---- PERF: pre-render one glowing dot per colour as a sprite. Drawing an
+// image is cheap; ctx.shadowBlur per particle per frame is not (it was the
+// stall). We stamp these sprites instead. ----
+const SPRITES={};
+function makeSprite(color){
+  const size=32, c=document.createElement('canvas');
+  c.width=c.height=size;
+  const g=c.getContext('2d');
+  const grd=g.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
+  grd.addColorStop(0,color);
+  grd.addColorStop(0.35,color);
+  grd.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=grd;
+  g.beginPath();g.arc(size/2,size/2,size/2,0,Math.PI*2);g.fill();
+  return c;
+}
+function sprite(color){
+  if(!SPRITES[color]) SPRITES[color]=makeSprite(color);
+  return SPRITES[color];
+}
+[...COLORS,...BOOM_COLORS].forEach(sprite);
+
 function makeParticles(){
   const targets=pulseTargets();
   particles=targets.map(t=>{
@@ -265,10 +287,9 @@ function loop(now){
       if(dx*dx+dy*dy<4) settled++;
       // energy streak: draw a short trail behind fast movers
       if(p.streak){
-        ctx.strokeStyle=p.c;ctx.globalAlpha=0.35;ctx.lineWidth=1.1;
-        ctx.shadowBlur=8;ctx.shadowColor=p.c;
+        ctx.strokeStyle=p.c;ctx.globalAlpha=0.3;ctx.lineWidth=1.4;
         ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(p.x,p.y);ctx.stroke();
-        ctx.globalAlpha=1;ctx.shadowBlur=0;
+        ctx.globalAlpha=1;
       }
       const s=0.6+Math.sin(now*0.007+p.seed)*0.4;
       drawDot(p,s);
@@ -297,10 +318,10 @@ function loop(now){
       e.x+=e.vx;e.y+=e.vy;e.vx*=0.95;e.vy*=0.95;e.vy+=0.04;
       e.life*=0.972;
       const tw=0.5+Math.sin(now*0.02+e.seed)*0.5;
-      ctx.beginPath();ctx.fillStyle=e.c;ctx.globalAlpha=e.life*tw;
-      ctx.shadowBlur=10;ctx.shadowColor=e.c;
-      ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fill();
-      ctx.globalAlpha=1;ctx.shadowBlur=0;
+      const img=sprite(e.c), d=e.r*7;
+      ctx.globalAlpha=e.life*tw;
+      ctx.drawImage(img, e.x-d/2, e.y-d/2, d, d);
+      ctx.globalAlpha=1;
     });
     if(t>160) phase='settle';
     if(phase==='settle'&&t>2600) phase='done';
@@ -315,9 +336,10 @@ function drawScan(now){
   scanX+=(x1-x0)/55;
   if(scanX>x1) scanX=x0;
   ctx.save();
-  ctx.globalAlpha=0.95;ctx.fillStyle='#F2F6FF';
-  ctx.shadowBlur=28;ctx.shadowColor='#6EA8FE';
-  ctx.beginPath();ctx.arc(scanX,cy,3.8,0,Math.PI*2);ctx.fill();
+  // glowing scanner head via sprite, not shadowBlur
+  const img=sprite('#EAF2FF'), d=26;
+  ctx.globalAlpha=0.95;
+  ctx.drawImage(img, scanX-d/2, cy-d/2, d, d);
   // faint vertical scan line
   ctx.globalAlpha=0.10;ctx.strokeStyle='#6EA8FE';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(scanX,cy-H*0.22);ctx.lineTo(scanX,cy+H*0.22);ctx.stroke();
@@ -326,10 +348,12 @@ function drawScan(now){
 
 function drawDot(p,glow){
   const a=Math.max(0,Math.min(1,p.life!=null?p.life:1));
-  ctx.beginPath();ctx.fillStyle=p.c;ctx.globalAlpha=a;
-  ctx.shadowBlur=14*glow;ctx.shadowColor=p.c;
-  ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
-  ctx.globalAlpha=1;ctx.shadowBlur=0;
+  const img=sprite(p.c);
+  // sprite size scales with the particle radius and its glow pulse
+  const d=p.r*7*(0.6+glow*0.5);
+  ctx.globalAlpha=a;
+  ctx.drawImage(img, p.x-d/2, p.y-d/2, d, d);
+  ctx.globalAlpha=1;
 }
 
 document.getElementById('skip').addEventListener('click',finishInstant);

@@ -10,6 +10,7 @@ import { CardIcon } from "@/components/landing/icons";
 import { Reveal } from "@/components/landing/reveal";
 import { SearchCard } from "@/components/landing/search-card";
 import { SpecialtyChips } from "@/components/landing/specialty-chips";
+import SplashLoader from "@/components/landing/splash/splash-loader";
 import { StatBand } from "@/components/landing/stat-band";
 import { btn, container } from "@/components/landing/styles";
 import { Topbar } from "@/components/landing/topbar";
@@ -67,6 +68,7 @@ export default async function LandingPage() {
 
   return (
     <div className="text-ink-light relative flex-1 overflow-x-clip bg-[radial-gradient(1200px_800px_at_75%_0%,rgba(59,130,246,.16)_0%,transparent_55%),radial-gradient(900px_600px_at_10%_92%,rgba(99,102,241,.18)_0%,transparent_60%),linear-gradient(160deg,#080B16_0%,#0B1022_45%,#070A14_100%)] bg-fixed">
+      <SplashLoader />
       <HeroSceneLoader />
       <Topbar />
       <Hero />

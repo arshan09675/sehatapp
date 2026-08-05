@@ -11,5 +11,6 @@ BUILD_PLAN.md
 # generated — overwritten by `supabase gen types`
 src/lib/supabase/database.types.ts
 
-# pixel reference for the landing page — keep byte-exact
-design-reference/sehatbook-complete.html
+# pixel/motion references — keep byte-exact so a reformat never hides the
+# real diff between two revisions of a reference
+design-reference/*.html
