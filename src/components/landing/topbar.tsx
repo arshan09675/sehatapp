@@ -20,6 +20,9 @@ export function Topbar() {
           <Link href="/doctors" className="text-muted-dark hover:text-white">
             Find a Doctor
           </Link>
+          <Link href="/triage" className="text-muted-dark hover:text-white">
+            Check symptoms
+          </Link>
           <Link href="/#how" className="text-muted-dark hover:text-white">
             How it works
           </Link>

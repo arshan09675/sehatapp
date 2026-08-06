@@ -10,6 +10,7 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-fraunces), ui-serif, serif;
+  --font-urdu: var(--font-noto-nastaliq), ui-serif, serif;
 
   /* SehatBook brand tokens (source of truth: design-reference/sehatbook-complete.html) */
   --color-brand: var(--brand);
@@ -237,4 +238,12 @@
   html {
     @apply scroll-smooth font-sans motion-reduce:scroll-auto;
   }
+}
+
+@utility font-urdu {
+  /* DESIGN.md: Urdu strings get Nastaliq and 1.9+ leading — the script stacks
+     glyphs diagonally and clips at normal line heights. Bundling the leading
+     into the utility means no call site can apply the font and forget it. */
+  font-family: var(--font-urdu);
+  line-height: 1.95;
 }

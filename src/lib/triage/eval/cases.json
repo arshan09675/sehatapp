@@ -1,0 +1,352 @@
+[
+  {
+    "id": "gp-01",
+    "lang": "en",
+    "text": "I've had a runny nose and a mild sore throat since yesterday, nothing serious.",
+    "specialty": "General Physician",
+    "urgency": "low"
+  },
+  {
+    "id": "gp-02",
+    "lang": "ur-roman",
+    "text": "teen din se tez bukhar hai aur pura jism toot raha hai",
+    "specialty": "General Physician",
+    "urgency": "medium"
+  },
+  {
+    "id": "gp-03",
+    "lang": "en",
+    "text": "Loose motions and vomiting since last night, feeling very weak now.",
+    "specialty": "General Physician",
+    "urgency": "medium"
+  },
+  {
+    "id": "gp-04",
+    "lang": "ur-roman",
+    "text": "shaam ko halka sar dard rehta hai",
+    "specialty": "General Physician",
+    "urgency": "low"
+  },
+  {
+    "id": "gp-05",
+    "lang": "en",
+    "text": "My sugar readings have been a little high on the home monitor this week.",
+    "specialty": "General Physician",
+    "urgency": "low"
+  },
+  {
+    "id": "gp-06",
+    "lang": "ur-roman",
+    "text": "kal raat se pait mein dard aur ulti ho rahi hai",
+    "specialty": "General Physician",
+    "urgency": "medium"
+  },
+  {
+    "id": "gp-07",
+    "lang": "en",
+    "text": "My father suddenly cannot move his left arm and his speech is slurred.",
+    "specialty": "General Physician",
+    "urgency": "emergency"
+  },
+  {
+    "id": "gp-08",
+    "lang": "ur-roman",
+    "text": "hafte se kamzori hai aur chakkar aate rehte hain",
+    "specialty": "General Physician",
+    "urgency": "medium"
+  },
+  {
+    "id": "gp-09",
+    "lang": "ur-roman",
+    "text": "meri behen behosh ho gayi hai aur jawab nahi de rahi",
+    "specialty": "General Physician",
+    "urgency": "emergency"
+  },
+  {
+    "id": "gp-10",
+    "lang": "en",
+    "text": "I took too many of my tablets by mistake and I feel very strange.",
+    "specialty": "General Physician",
+    "urgency": "emergency"
+  },
+  {
+    "id": "gp-11",
+    "lang": "ur-roman",
+    "text": "peshab karte waqt jalan hoti hai kuch dinon se",
+    "specialty": "General Physician",
+    "urgency": "medium"
+  },
+  {
+    "id": "derm-01",
+    "lang": "en",
+    "text": "Small itchy bumps have appeared on my forearms.",
+    "specialty": "Dermatology",
+    "urgency": "low"
+  },
+  {
+    "id": "derm-02",
+    "lang": "ur-roman",
+    "text": "chehre par daane nikal rahe hain",
+    "specialty": "Dermatology",
+    "urgency": "low"
+  },
+  {
+    "id": "derm-03",
+    "lang": "en",
+    "text": "A red patch on my leg is spreading and getting worse each day.",
+    "specialty": "Dermatology",
+    "urgency": "medium"
+  },
+  {
+    "id": "derm-04",
+    "lang": "ur-roman",
+    "text": "sar mein khujli hai aur baal bohat jhar rahe hain",
+    "specialty": "Dermatology",
+    "urgency": "medium"
+  },
+  {
+    "id": "derm-05",
+    "lang": "en",
+    "text": "Dry flaky skin on my elbows that will not go away.",
+    "specialty": "Dermatology",
+    "urgency": "low"
+  },
+  {
+    "id": "derm-06",
+    "lang": "ur-roman",
+    "text": "haath par daad ho gaya hai gol nishan bana hua hai",
+    "specialty": "Dermatology",
+    "urgency": "low"
+  },
+  {
+    "id": "cardio-01",
+    "lang": "en",
+    "text": "Crushing pain in my chest spreading to my left arm and I am sweating a lot.",
+    "specialty": "Cardiology",
+    "urgency": "emergency"
+  },
+  {
+    "id": "cardio-02",
+    "lang": "ur-roman",
+    "text": "seene mein shadeed dard hai aur saans phool raha hai",
+    "specialty": "Cardiology",
+    "urgency": "emergency"
+  },
+  {
+    "id": "cardio-03",
+    "lang": "en",
+    "text": "My heart pounds and skips beats whenever I climb the stairs.",
+    "specialty": "Cardiology",
+    "urgency": "medium"
+  },
+  {
+    "id": "cardio-04",
+    "lang": "ur-roman",
+    "text": "dil ki dhadkan tez rehti hai aur ghabrahat hoti hai",
+    "specialty": "Cardiology",
+    "urgency": "medium"
+  },
+  {
+    "id": "cardio-05",
+    "lang": "en",
+    "text": "My cholesterol came back high on a routine test and I want it reviewed.",
+    "specialty": "Cardiology",
+    "urgency": "low"
+  },
+  {
+    "id": "peds-01",
+    "lang": "en",
+    "text": "My 3 year old has had a fever of 102 for two days now.",
+    "specialty": "Pediatrics",
+    "urgency": "medium"
+  },
+  {
+    "id": "peds-02",
+    "lang": "ur-roman",
+    "text": "bachay ko dast lag gaye hain aur kamzori ho rahi hai",
+    "specialty": "Pediatrics",
+    "urgency": "medium"
+  },
+  {
+    "id": "peds-03",
+    "lang": "en",
+    "text": "My daughter is due for her next vaccination.",
+    "specialty": "Pediatrics",
+    "urgency": "low"
+  },
+  {
+    "id": "peds-04",
+    "lang": "ur-roman",
+    "text": "mere bachay ke honth neele ho rahe hain aur saans nahi le pa raha",
+    "specialty": "Pediatrics",
+    "urgency": "emergency"
+  },
+  {
+    "id": "peds-05",
+    "lang": "en",
+    "text": "My son has a mild cough but he is eating and playing normally.",
+    "specialty": "Pediatrics",
+    "urgency": "low"
+  },
+  {
+    "id": "peds-06",
+    "lang": "ur-roman",
+    "text": "bachi ko kaan mein dard hai aur raat bhar roti rahi",
+    "specialty": "Pediatrics",
+    "urgency": "medium"
+  },
+  {
+    "id": "dent-01",
+    "lang": "en",
+    "text": "Throbbing pain in a back tooth and I cannot chew on that side.",
+    "specialty": "Dentistry",
+    "urgency": "medium"
+  },
+  {
+    "id": "dent-02",
+    "lang": "ur-roman",
+    "text": "daant mein bohat dard hai raat ko so nahi sakta",
+    "specialty": "Dentistry",
+    "urgency": "medium"
+  },
+  {
+    "id": "dent-03",
+    "lang": "en",
+    "text": "One of my fillings has come out but it does not hurt.",
+    "specialty": "Dentistry",
+    "urgency": "low"
+  },
+  {
+    "id": "dent-04",
+    "lang": "ur-roman",
+    "text": "brush karte waqt masuray se thora khoon aata hai",
+    "specialty": "Dentistry",
+    "urgency": "low"
+  },
+  {
+    "id": "dent-05",
+    "lang": "en",
+    "text": "I want my wisdom tooth checked before it becomes a problem.",
+    "specialty": "Dentistry",
+    "urgency": "low"
+  },
+  {
+    "id": "gyn-01",
+    "lang": "en",
+    "text": "Heavy and irregular periods for the last three months.",
+    "specialty": "Gynecology",
+    "urgency": "medium"
+  },
+  {
+    "id": "gyn-02",
+    "lang": "ur-roman",
+    "text": "hamal ka chhata mahina hai aur pait mein dard ho raha hai",
+    "specialty": "Gynecology",
+    "urgency": "medium"
+  },
+  {
+    "id": "gyn-03",
+    "lang": "en",
+    "text": "I would like to discuss family planning options with someone.",
+    "specialty": "Gynecology",
+    "urgency": "low"
+  },
+  {
+    "id": "gyn-04",
+    "lang": "ur-roman",
+    "text": "mahwari waqt par nahi aa rahi",
+    "specialty": "Gynecology",
+    "urgency": "low"
+  },
+  {
+    "id": "gyn-05",
+    "lang": "en",
+    "text": "Pelvic pain that gets much worse around my period every month.",
+    "specialty": "Gynecology",
+    "urgency": "medium"
+  },
+  {
+    "id": "ortho-01",
+    "lang": "en",
+    "text": "My lower back has been hurting for weeks and it is worse when I sit.",
+    "specialty": "Orthopedics",
+    "urgency": "medium"
+  },
+  {
+    "id": "ortho-02",
+    "lang": "ur-roman",
+    "text": "ghutno mein dard hai seerhiyan charhne mein takleef hoti hai",
+    "specialty": "Orthopedics",
+    "urgency": "medium"
+  },
+  {
+    "id": "ortho-03",
+    "lang": "en",
+    "text": "Mild shoulder stiffness in the mornings that eases after an hour.",
+    "specialty": "Orthopedics",
+    "urgency": "low"
+  },
+  {
+    "id": "ortho-04",
+    "lang": "ur-roman",
+    "text": "khelte hue kandhe mein moch aa gayi hai",
+    "specialty": "Orthopedics",
+    "urgency": "medium"
+  },
+  {
+    "id": "ortho-05",
+    "lang": "en",
+    "text": "I twisted my ankle yesterday and it is swollen this morning.",
+    "specialty": "Orthopedics",
+    "urgency": "medium"
+  },
+  {
+    "id": "ortho-06",
+    "lang": "ur-roman",
+    "text": "haddiyon mein halka dard rehta hai mausam badalne par",
+    "specialty": "Orthopedics",
+    "urgency": "low"
+  },
+  {
+    "id": "ortho-07",
+    "lang": "en",
+    "text": "I fell from a ladder, my leg is bent the wrong way and bleeding a lot.",
+    "specialty": "Orthopedics",
+    "urgency": "emergency"
+  },
+  {
+    "id": "ent-01",
+    "lang": "en",
+    "text": "Sore throat with white patches on my tonsils for five days.",
+    "specialty": "ENT",
+    "urgency": "medium"
+  },
+  {
+    "id": "ent-02",
+    "lang": "ur-roman",
+    "text": "kaan se pani nikal raha hai aur dard bhi hai",
+    "specialty": "ENT",
+    "urgency": "medium"
+  },
+  {
+    "id": "ent-03",
+    "lang": "en",
+    "text": "My nose is blocked every morning and I sneeze a lot.",
+    "specialty": "ENT",
+    "urgency": "low"
+  },
+  {
+    "id": "ent-04",
+    "lang": "ur-roman",
+    "text": "gale mein khraash hai aur awaz baith gayi hai",
+    "specialty": "ENT",
+    "urgency": "low"
+  },
+  {
+    "id": "ent-05",
+    "lang": "en",
+    "text": "I keep getting nosebleeds this summer, a few times a week.",
+    "specialty": "ENT",
+    "urgency": "medium"
+  }
+]

@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "eval:triage": "jiti scripts/eval-triage.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -38,6 +39,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "eslint-config-prettier": "^10.1.8",
+    "jiti": "2.7.0",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",

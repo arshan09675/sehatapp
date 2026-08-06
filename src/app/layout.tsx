@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist_Mono, Inter } from "next/font/google";
+import {
+  Fraunces,
+  Geist_Mono,
+  Inter,
+  Noto_Nastaliq_Urdu,
+} from "next/font/google";
 
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -23,6 +28,16 @@ const fraunces = Fraunces({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// DESIGN.md: Urdu is never rendered in Inter. Nastaliq is a calligraphic
+// script whose glyphs stack diagonally, so it clips at normal line heights —
+// the `font-urdu` utility in globals.css carries the 1.9 leading with it.
+const notoNastaliqUrdu = Noto_Nastaliq_Urdu({
+  subsets: ["arabic"],
+  weight: ["400", "600"],
+  variable: "--font-noto-nastaliq",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -55,7 +70,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${fraunces.variable} ${geistMono.variable} ${notoNastaliqUrdu.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
