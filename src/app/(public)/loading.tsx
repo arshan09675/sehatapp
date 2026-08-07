@@ -1,12 +1,17 @@
 import { Footer } from "@/components/landing/footer";
+import { SheetSkeleton } from "@/components/landing/sheet-skeleton";
 import { container } from "@/components/landing/styles";
 import { Topbar } from "@/components/landing/topbar";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * Fallback for the landing, which is force-dynamic and waits on two Supabase
- * round-trips before it can render. /doctors and /doctors/[id] have their own
- * closer boundaries, so this only stands in for `/`.
+ * Navigation fallback for the landing. /doctors and /doctors/[id] have their
+ * own closer boundaries, so this only stands in for `/`.
+ *
+ * It is no longer on the initial-load path: the page shell renders
+ * synchronously and streams immediately, with its own <Suspense> around the
+ * Supabase-backed sections. This covers the gap during a client-side
+ * navigation to `/`, before that shell arrives.
  *
  * The backdrop and sheet classes mirror src/app/(public)/page.tsx, and the hero
  * footprint mirrors src/components/landing/hero.tsx — edit those and this drifts.
@@ -38,30 +43,7 @@ export default function LandingLoading() {
 
       {/* ===== light content sheet ===== */}
       <div className="bg-surface-dim text-ink relative z-[2] -mt-[34px] rounded-t-[34px] pt-4 shadow-[0_-30px_60px_rgba(0,0,0,.35)]">
-        <section className="pb-[52px]">
-          <div className={container}>
-            <Skeleton className="-mt-[52px] h-[86px] w-full max-w-[820px] rounded-2xl md:mx-auto" />
-            <div className="mt-6 flex flex-wrap gap-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-9 w-28 rounded-full" />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="pt-2 pb-[52px]">
-          <div className={container}>
-            <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
-              <Skeleton className="h-8 w-64" />
-              <Skeleton className="h-4 w-36" />
-            </div>
-            <div className="grid grid-cols-2 gap-4 max-[860px]:grid-cols-1">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-[186px] w-full rounded-2xl" />
-              ))}
-            </div>
-          </div>
-        </section>
+        <SheetSkeleton />
       </div>
 
       <Footer />

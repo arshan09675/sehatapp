@@ -1,27 +1,56 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+
+import { cn } from "@/lib/utils";
+import { HeroSceneFallback } from "./hero-scene-fallback";
 
 /**
  * Landing hero 3D scene — 1:1 port of the reference's Three.js background
  * (glass medical cross + gem core, glow halo, particle rings, node network,
  * floating pills, dust, pointer parallax). Written against modern three
  * (the reference targeted r128): outputEncoding/sRGBEncoding became
- * outputColorSpace/SRGBColorSpace, and canvas textures need an explicit
- * colorSpace.
+ * outputColorSpace/SRGBColorSpace, canvas textures need an explicit
+ * colorSpace, and Clock is deprecated in favour of Timer.
  *
- * Loaded only on the client via next/dynamic (ssr: false) so it never blocks
- * server render; the canvas fades in once the first frame is painted.
+ * three is a bundled npm dependency (`import * as THREE from "three"`), so the
+ * scene is served from the app's own /_next/static chunks. It never depends on
+ * a third-party CDN being reachable.
+ *
+ * Every failure path here ends at HeroSceneFallback rather than at an empty
+ * screen: no WebGL, a throw during setup, a lost context. The canvas is also
+ * created per mount instead of being rendered by React — see the comment in
+ * the effect.
  */
+
+type Status = "pending" | "ready" | "failed";
+
 export default function HeroScene() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [status, setStatus] = useState<Status>("pending");
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const host = hostRef.current;
+    if (!host) return;
 
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // A fresh canvas per mount, created here rather than rendered by React.
+    // A canvas hands out one WebGL context for its whole life, so reusing the
+    // element across mounts gives the second renderer the first one's context
+    // — already torn down by the first cleanup. Strict Mode remounts every
+    // effect in development and HMR does it again on every edit, so that is
+    // the common path, not an edge case.
+    const canvas = document.createElement("canvas");
+    canvas.className = "block size-full";
+    host.appendChild(canvas);
+
+    const fail = (reason: string, error?: unknown) => {
+      console.error(`[hero-scene] ${reason}`, error ?? "");
+      setStatus("failed");
+    };
+
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
@@ -29,8 +58,9 @@ export default function HeroScene() {
         antialias: true,
         alpha: true,
       });
-    } catch {
-      canvas.style.display = "none";
+    } catch (error) {
+      canvas.remove();
+      fail("WebGL unavailable", error);
       return;
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -73,12 +103,18 @@ export default function HeroScene() {
       return t;
     }
     let envMap: THREE.Texture | null = null;
+    let envSource: THREE.Texture | null = null;
     let pmrem: THREE.PMREMGenerator | null = null;
     try {
       pmrem = new THREE.PMREMGenerator(renderer);
-      envMap = pmrem.fromEquirectangular(envTex()).texture;
+      envSource = envTex();
+      envMap = pmrem.fromEquirectangular(envSource).texture;
       scene.environment = envMap;
-    } catch {}
+    } catch (error) {
+      // Reflections are a nicety — the scene still reads flat-lit without
+      // them, so this downgrades rather than falling back.
+      console.warn("[hero-scene] environment map unavailable", error);
+    }
 
     scene.add(new THREE.AmbientLight(0x9fb4e0, 0.4));
     const key = new THREE.DirectionalLight(0xffffff, 0.7);
@@ -397,10 +433,25 @@ export default function HeroScene() {
     addEventListener("pointermove", onPointerMove);
     addEventListener("resize", onResize);
 
-    const clock = new THREE.Clock();
+    // Timer over the deprecated Clock. connect(document) makes it hold time
+    // still while the tab is hidden, so a backgrounded tab does not resume
+    // with the core spun minutes ahead of where it left off.
+    const timer = new THREE.Timer();
+    timer.connect(document);
+
     let intro = 0,
       first = true,
       raf = 0;
+
+    const onContextLost = (event: Event) => {
+      // Default behaviour makes the loss permanent; either way there is
+      // nothing left to draw, so hand over to the static fallback.
+      event.preventDefault();
+      cancelAnimationFrame(raf);
+      fail("WebGL context lost");
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost);
+
     function drift(d: { g: THREE.BufferGeometry; count: number }) {
       const a = d.g.attributes.position.array as Float32Array;
       for (let i = 0; i < d.count; i++) {
@@ -409,8 +460,9 @@ export default function HeroScene() {
       }
       d.g.attributes.position.needsUpdate = true;
     }
-    function frame() {
-      const t = clock.getElapsedTime();
+    function frame(timestamp?: number) {
+      timer.update(timestamp);
+      const t = timer.getElapsed();
       intro = Math.min(1, intro + 0.012);
       const e = 1 - Math.pow(1 - intro, 3);
       core.scale.setScalar(e * (1 + Math.sin(t * 1.6) * 0.03));
@@ -443,27 +495,39 @@ export default function HeroScene() {
       renderer.render(scene, camera);
       if (first) {
         first = false;
-        canvas!.style.opacity = "1";
+        setStatus("ready");
       }
       raf = requestAnimationFrame(frame);
     }
-    if (reduce) {
-      intro = 1;
-      core.scale.setScalar(1);
-      camera.position.z = 10;
-      core.rotation.y = 0.5;
-      net.rotation.y = -0.3;
-      camera.lookAt(0, 0, 0);
-      renderer.render(scene, camera);
-      canvas.style.opacity = "1";
-    } else {
-      frame();
+
+    // Both paths hand off to rAF rather than painting inline: the status flip
+    // has to happen outside the effect body to avoid a cascading render, and
+    // scheduling it also means a tab that loads in the background keeps the
+    // fallback up until it is actually looked at, instead of revealing a
+    // canvas frozen on frame one of the intro.
+    try {
+      if (reduce) {
+        intro = 1;
+        core.scale.setScalar(1);
+        camera.position.z = 10;
+        core.rotation.y = 0.5;
+        net.rotation.y = -0.3;
+        camera.lookAt(0, 0, 0);
+        renderer.render(scene, camera);
+        raf = requestAnimationFrame(() => setStatus("ready"));
+      } else {
+        raf = requestAnimationFrame(frame);
+      }
+    } catch (error) {
+      fail("first frame failed", error);
     }
 
     return () => {
       cancelAnimationFrame(raf);
       removeEventListener("pointermove", onPointerMove);
       removeEventListener("resize", onResize);
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      timer.disconnect();
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {
           obj.geometry.dispose();
@@ -473,17 +537,36 @@ export default function HeroScene() {
         if (mat) (Array.isArray(mat) ? mat : [mat]).forEach((m) => m.dispose());
       });
       GLOW.dispose();
+      envSource?.dispose();
       envMap?.dispose();
       pmrem?.dispose();
       renderer.dispose();
+      // dispose() frees three's GPU allocations but leaves the WebGL context
+      // itself alive. Browsers cap those (~16 per process) and reclaim orphans
+      // only on GC, so without this a long session of HMR reloads eventually
+      // starves the next renderer and the hero stops appearing until a hard
+      // reload. Safe here only because the canvas is per-mount.
+      renderer.forceContextLoss();
+      canvas.remove();
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-0 block opacity-0 transition-opacity duration-[1400ms] ease-out"
-      aria-hidden="true"
-    />
+    <>
+      <HeroSceneFallback
+        className={cn(
+          "transition-opacity duration-[1400ms] ease-out",
+          status === "ready" ? "opacity-0" : "opacity-100",
+        )}
+      />
+      <div
+        ref={hostRef}
+        aria-hidden="true"
+        className={cn(
+          "pointer-events-none fixed inset-0 z-0 transition-opacity duration-[1400ms] ease-out",
+          status === "ready" ? "opacity-100" : "opacity-0",
+        )}
+      />
+    </>
   );
 }
